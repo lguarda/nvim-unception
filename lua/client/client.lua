@@ -19,7 +19,7 @@ local file_args = {}
 for _, file in ipairs(true_file_args) do
     local absolute_filepath = unception_get_absolute_filepath(file)
     table.insert(file_args , {
-        path = unception_escape_special_chars(absolute_filepath),
+        path = absolute_filepath,
         line = file_lines[file]
     })
 end

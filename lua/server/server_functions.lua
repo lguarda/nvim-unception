@@ -34,7 +34,7 @@ end
 
 function _G.unception_handle_bufunload(unloaded_buffer_filepath)
     unloaded_buffer_filepath = unception_get_absolute_filepath(unloaded_buffer_filepath)
-    unloaded_buffer_filepath = unception_escape_special_chars(unloaded_buffer_filepath)
+    --unloaded_buffer_filepath = unception_escape_special_chars(unloaded_buffer_filepath)
 
     if (unloaded_buffer_filepath == filepath_to_check) then
         unblock_client_and_reset_state()
@@ -43,7 +43,7 @@ end
 
 function _G.unception_handle_quitpre(quitpre_buffer_filepath)
     quitpre_buffer_filepath = unception_get_absolute_filepath(quitpre_buffer_filepath)
-    quitpre_buffer_filepath = unception_escape_special_chars(quitpre_buffer_filepath)
+    --quitpre_buffer_filepath = unception_escape_special_chars(quitpre_buffer_filepath)
 
     if (quitpre_buffer_filepath == filepath_to_check) then
         -- If this buffer replaced the blocked terminal buffer, we should restore it to the same window.
@@ -105,10 +105,11 @@ local function unception_detect_open_method(options)
 end
 
 local function unception_open_file(open_method, file, diff)
+    local path = unception_escape_special_chars(file.path)
     if file.line then
-        vim.cmd(("%s +%d %s"):format(open_method, file.line, file.path))
+        vim.cmd(("%s +%d %s"):format(open_method, file.line, path))
     else
-        vim.cmd(("%s %s"):format(open_method, file.path))
+        vim.cmd(("%s %s"):format(open_method, path))
     end
     if diff then
         vim.cmd.diffthis()
@@ -129,12 +130,12 @@ end
 local function unception_open_file_argadd(file_args, options)
     local path = {}
     for _, file in ipairs(file_args) do
-        table.insert(path, file.path)
+        table.insert(path, unception_escape_special_chars(file.path))
     end
     path = table.concat(path, " ")
     -- Had some issues when using argedit. Explicitly calling these
     -- separately appears to work though.
-    vim.cmd("0argadd "..path)
+    vim.cmd("0argadd " .. path)
 
     if (options.open_in_new_tab) then
         last_replaced_buffer_id = nil
