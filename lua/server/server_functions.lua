@@ -54,6 +54,9 @@ function _G.unception_handle_quitpre(quitpre_buffer_filepath)
         end
 
         unblock_client_and_reset_state()
+        -- this will delete holding buffer, so neovim will be forced
+        -- to reload the file, this fix sequential git rebase -i for example
+        vim.cmd(("bdelete! %d"):format(vim.api.nvim_get_current_buf()))
     end
 end
 
@@ -79,6 +82,9 @@ function _G.unception_notify_when_done_editing(pipe_to_respond_on, filepath)
     -- When done editing in another tab we can't use QuitPre becuase if we switch
     -- back to the previous tabpage within QuitPre it will prevent the tab to be closed
     -- So here we use the TabClosed event
+    if unception_tabclosed_autocmd_id then
+        vim.api.nvim_del_autocmd(unception_tabclosed_autocmd_id)
+    end
     unception_tabclosed_autocmd_id = vim.api.nvim_create_autocmd("TabClosed",
         { callback = unception_handle_tabclosed })
 end
